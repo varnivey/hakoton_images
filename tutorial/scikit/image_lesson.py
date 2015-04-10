@@ -124,7 +124,7 @@ local_maxi = peak_local_max(distance, indices=False, labels=binary, min_distance
 markers = label(local_maxi)
 plt.imshow(double_dilation(local_maxi,diamond))
 labels_ws = watershed(-distance, markers, mask=binary)
-plt.imshow(сщдщкшяу(labels_ws))
+plt.imshow(colorize(labels_ws))
 
 
 # Правильный способ сегментации
