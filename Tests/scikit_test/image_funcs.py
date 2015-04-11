@@ -2,17 +2,15 @@ import numpy as np
 from skimage.measure import label
 
 from skimage.filter import gaussian_filter, canny
-from skimage.morphology import binary_dilation, binary_erosion
+from scipy.ndimage.morphology import binary_dilation, binary_erosion
 from skimage.morphology import remove_small_objects
 
 from scipy.ndimage import distance_transform_edt
 from skimage.feature import peak_local_max
 from skimage.morphology import watershed
 
-def fill_holes(edges):
+def fill_holes(binary):
     '''Fill holes in binary image'''
-
-    binary = edges.copy()
 
     labels = label(binary)
 
@@ -46,15 +44,15 @@ def double_dilation(binary, selem):
     '''Returns the result of two sequential binary dilations'''
 
     for i in (1,2):
-        binary = binary_dilation(binary, selem)
+        binary = binary_dilation(binary, selem, border_value = 1)
 
     return binary
 
-def double_erosion(binary, selem):
+def double_erosion(binary, selem, border_value = 1):
     '''Returns the result of two sequential binary erosions'''
 
     for i in (1,2):
-        binary = binary_erosion(binary, selem)
+        binary = binary_erosion(binary, selem, border_value = 1)
 
     return binary
 

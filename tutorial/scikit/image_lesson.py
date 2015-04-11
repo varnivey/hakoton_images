@@ -82,7 +82,7 @@ binary = binary_fill_holes(edges)
 plt.imshow(binary)
 
 # Правильный способ заливки границ
-from skimage.morphology import binary_dilation, binary_erosion
+from scipy.ndimage.morphology import binary_dilation, binary_erosion
 diamond = np.array([0,1,0,1,1,1,0,1,0], dtype=bool).reshape((3,3))
 
 edges = double_dilation(edges, diamond)
