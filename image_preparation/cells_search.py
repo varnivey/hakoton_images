@@ -3,6 +3,9 @@ import numpy as np
 from image_funcs import *
 from scipy.misc import imread, imsave
 
+def grid(image, threshold):
+
+
 ###############################################################################
 import scipy.misc
 nuclei = imread('3.jpg')
