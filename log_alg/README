@@ -1,0 +1,11 @@
+Предварительная подготовка изображения:
+
+from scipy.misc import imread
+from log_alg import label_colonies
+
+source = imread('3_cropped.png')
+green = source[:,:,1]
+gray = 255 - green
+
+colony_number, pic_with_circles, coords = label_colonies(gray)
+
