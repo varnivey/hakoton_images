@@ -45,8 +45,8 @@ class Colony():
     def maxDensity(self, r):
 
         retval = 255.0
-        w = int(self.gsrescoeff * self.gsimage.shape[0])
-        h = int(self.gsrescoeff * self.gsimage.shape[1])
+        w = self.gsimage.shape[0]
+        h = self.gsimage.shape[1]
 	R = int(self.gsrescoeff * self.geometry[2])
         x = int(self.gsrescoeff * self.geometry[0])
         y = int(self.gsrescoeff * self.geometry[1])
