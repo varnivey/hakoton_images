@@ -1,18 +1,17 @@
 from PlateImage import *
 
 class PlateExp():
-    def __init__(self, images):
+    def __init__(self):
             self.images = []
-            self.images += images
-            self.stat = {}
             self.listPlateImages = []
+            self.stat = {}
     
     def addImages(self, images):
         for image in images:
             plImage = PlateImage(image)
             self.listPlateImages.append(plImage)
             
-            self.images += images
+        self.images += images
         
     def calculate(self):
         for curPlate in self.listPlateImages:
@@ -22,4 +21,3 @@ class PlateExp():
         self.images = []
         self.listPlateImages = []
 
-    
