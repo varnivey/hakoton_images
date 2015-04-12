@@ -12,11 +12,11 @@ sys.path.append('../tutorial/scikit')
 sys.path.append('../sample_images')
 sys.path.append('../log_alg')
 
-<<<<<<< Updated upstream
+
 from image_funcs import *
 import find_colonies
 import log_alg
-=======
+
 #Libs for cutPetri
 from skimage import data, color
 from skimage.transform import hough_circle
@@ -30,8 +30,6 @@ from scipy.ndimage.morphology import binary_dilation, binary_erosion
 from image_funcs import clear_border
 from PIL import Image
 
-
->>>>>>> Stashed changes
 
 class PlateImage():
     def __init__(self, image, algo=2 ):
@@ -150,7 +148,7 @@ class PlateImage():
       for colony in self.colonies:
           colony_score = colony.getScore()
           colony_geom = colony.getGeom()
-          circle_image, circle_mask = circle_colony(colony_geom, colony_score, im_shape)
+          circle_image, circle_mask = log_alg.circle_colony(colony_geom, colony_score, im_shape)
           
           # add circle to initial image of plate        
           self.preview[circle_mask] = 0

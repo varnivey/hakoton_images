@@ -8,13 +8,7 @@ class PlateExp():
             self.allexpdata=[]
     
     def addImages(self, images):
-<<<<<<< Updated upstream
-        for image in images:
-            plImage = PlateImage(image)
-            self.listPlateImages.append(plImage)
-            
-        self.images += images
-=======
+
         self.images += images
         for i in range(len(images)):
             masks = []
@@ -22,7 +16,6 @@ class PlateExp():
             for j in range(len(masks)):
                 plImage = PlateImage(images[i])
                 self.listPlateImages.append(plImage)
->>>>>>> Stashed changes
         
     def calculate(self):
         for curPlate in self.listPlateImages:
@@ -48,8 +41,6 @@ class PlateExp():
 
         diamond = np.array([0,1,0,1,1,1,0,1,0], dtype=bool).reshape((3,3))
 
-<<<<<<< Updated upstream
-=======
         for i in range(10):
             edges = binary_dilation(edges, diamond)
 
@@ -75,4 +66,4 @@ class PlateExp():
             images.append(new_image)
             
         return images
->>>>>>> Stashed changes
+
