@@ -100,10 +100,10 @@ def circle_markers(blobs, pic_shape):
     return markers_rad
 
 
-def circle_colony(colony_geometry, colony_score, image_shape):
+def circle_colony(colony_geometry, colony_score, image_shape, score_min=0.0, score_max=255.0):
     # color of circle
     hue_start, hue_stop = [0.0, 1/3.0]  # from 0 to 120 degrees hue colors
-    score_min, score_max = [1.0, 3.0]  # colony scores from 1 till 3
+    #score_min, score_max = [1.0, 3.0]  # colony scores from 1 till 3
     color_coeff = ((hue_stop - hue_start)/(score_max - score_min))*(colony_score - score_min)
     print(color_coeff)
     

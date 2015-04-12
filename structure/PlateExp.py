@@ -1,4 +1,5 @@
 from PlateImage import *
+from skimage.filters import threshold_otsu
 
 class PlateExp():
     def __init__(self):
@@ -26,7 +27,6 @@ class PlateExp():
         self.listPlateImages = []
     
     def cutPetri(self, number_of_image):
-        plt.ion()
         
         image = self.images[number_of_image]
         
@@ -67,3 +67,11 @@ class PlateExp():
             
         return images
 
+    def genPreviews(self):
+    
+        maxval = np.max(self.allexpdata)
+        minval = np.min(self.allexpdata)
+        for plate in listPlateImages:
+        
+            plate.circleAllColonies(minval, maxval)
+    
