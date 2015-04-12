@@ -1,7 +1,11 @@
+import numpy
+
 class Colony():
-    def __init__(self, mask, image, geometry=None):
+    def __init__(self, mask, image, gsimage, gsrescoeff, geometry=None):
         self.mask = mask
         self.image = image
+        self.gsimage = gsimage
+        self.gsrescoeff = gsrescoeff
         self.geometry = geometry
         self.score = None
         
@@ -11,11 +15,17 @@ class Colony():
         return self.score
         
     def calcScore(self):
-        return 2. #TODO
+        return self.maxDensity(5) # TODO not 5
 
-    def integrate(x, y, r):
-	import numpy
-        w, h = self.image.shape
+    def gatherData(self, data):
+        data.append(self.getScore())
+        return data[-1]
+
+    def integrate(self, x, y, r):
+	
+        w = self.gsimage.shape[0]
+        h = self.gsimage.shape[1]
+        
         s = 0.0
         n = 0
         r2 = r**2
@@ -26,16 +36,18 @@ class Colony():
                 if currX >= w or currX < 0 or currY >= h or currY < 0 or (i**2 + j**2) > r2:
                     continue
                 else:
-                    s += self.image[currX][currY]
+                    s += self.gsimage[currX][currY]
                     n += 1
         if n != 0:
-        s /= n
+            s /= n
         return s
 
-    def maxDensity(r):
-	import numpy
+    def maxDensity(self, r):
+
         retval = 255.0
-        w, h = self.image.shape
+        w = self.gsimage.shape[0]
+        h = self.gsimage.shape[1]
+        
         for i in range(-self.geometry[2], self.geometry[2]+1):
             for j in range(-self.geometry[2], self.geometry[2]+1):
                 currX = self.geometry[0] + i
@@ -43,7 +55,7 @@ class Colony():
                 if currX >= w or currX < 0 or currY >= h or currY < 0:
                     continue
                 else:
-                    tmp = integrate(self.image, currX, currY, r)
+                    tmp = self.integrate(currX, currY, r)
                 if(tmp < retval):
                     retval = tmp
         return retval

@@ -2,6 +2,7 @@
 import numpy as np
 #import matplotlib.pyplot as plt
 from skimage.morphology import watershed
+import scipy.misc
 
 from Colony import Colony
 
@@ -71,7 +72,7 @@ class PlateImage():
         # =============
         self.algo1_divide_colonies(blobmask, coords)
     
-    def calc(self):
+    def calc(self, data):
         if self.isCalc != None:
             return self.isCalc
 
@@ -88,7 +89,8 @@ class PlateImage():
         
         self.pr_count = 0.
         for i in self.colonies:
-            omega += i.getScore()
+            #omega += i.getScore()
+            omega += i.gatherData(data);
             self.pr_count += 1.
         
         assert (self.count == int(self.pr_count)), "ERROR!"
@@ -98,6 +100,10 @@ class PlateImage():
 
     def algo1_divide_colonies(self, labelled_image, geometry=[]):
        self.colonies = []
+       
+       rescoeff = 1
+       gsimage = np.max(self.image,2)
+       gsimage = scipy.misc.imresize(gsimage, rescoeff)
 
        self.image_mask = labelled_image
 
@@ -113,9 +119,9 @@ class PlateImage():
            colony_part[labelled_image != colony] = 0
 
            if (len(geometry)>0): # it was provided
-               colony = Colony(colony_part, self.image, geometry[ctr])
+               colony = Colony(colony_part, self.image, gsimage, rescoeff, geometry[ctr])
            else:
-               colony = Colony(colony_part, self.image)
+               colony = Colony(colony_part, self.image, gsimage, rescoeff)
                
            self.colonies.append(colony)
            ctr+=1

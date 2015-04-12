@@ -5,6 +5,7 @@ class PlateExp():
             self.images = []
             self.listPlateImages = []
             self.stat = {}
+            self.allexpdata=[]
     
     def addImages(self, images):
         for image in images:
@@ -15,7 +16,7 @@ class PlateExp():
         
     def calculate(self):
         for curPlate in self.listPlateImages:
-            print curPlate.calc()
+            print curPlate.calc(self.allexpdata)
     
     def deleteImages(self):
         self.images = []

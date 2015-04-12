@@ -20,6 +20,11 @@ from table_widget import TableWidget
 from image_widget import ImageWidget
 from file_source_widget import FileSourceWidget
 
+from scipy.misc import imread, imsave
+
+sys.path.append("../structure")
+from PlateExp import PlateExp
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -132,27 +137,54 @@ class MainWindow(QtGui.QMainWindow):
     def updateProgressBar(self,value):
         self.pbar.setValue(value)
         
-class Calculator(QtCore.QObject): 
+class Calculator(QtCore.QObject,PlateExp): 
     signal_update_table = QtCore.pyqtSignal(dict) 
     signal_update_pbar = QtCore.pyqtSignal(int) 
     finished = QtCore.pyqtSignal()   
      
     def __init__(self,listOfPaths):
         QtCore.QObject.__init__(self)
+        PlateExp.__init__(self)
         self.paths=listOfPaths
     
     def run(self):
         print 'started'
-        status=0
+        #Add
+        imgholder=[]
+        usedpaths=[]
         for path in self.paths:
-            time.sleep(3)
+            try:
+                img = imread(path)
+            except:
+                print "Error: Image read failed. Not processing this ( %s )" % path
+                continue
+                
+            imgholder.append(img)
+            usedpaths.append(path)
+            print "Loaded image. ( %s )" % path
+        
+        self.addImages(imgholder)
+        #print usedpaths
+        print "------------------------------"
+        print "Processing %d plates..." % len(self.listPlateImages)
+        
+        #Calculate
+        status=0
+        self.signal_update_pbar.emit(status*100/len(self.paths))
+        dictionary = {}
+        for curPlate in self.listPlateImages:
+        
+            rez = curPlate.calc(self.allexpdata)
+            dictionary.update({ os.path.basename(usedpaths[status]) + (" (%i)" % ((status+1) % 2)) :\
+                                                                                 {'Value' : str(rez) } })
+            
             status+=1
             self.signal_update_pbar.emit(status*100/len(self.paths))
         
-        dictionary={'result':{'Value':str(status)}}
+        print "Done."
+        #dictionary={'result':{'Value':str(status)}}
         self.signal_update_table.emit(dictionary)
         self.finished.emit()
-        
         
 def main():
     
