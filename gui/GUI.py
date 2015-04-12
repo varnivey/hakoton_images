@@ -111,17 +111,23 @@ class MainWindow(QtGui.QMainWindow):
     def open_image_file(self,path):
         self.preview.setImage(path)
         self.result.setImage(path)
+
+    def enable_runButton(self):
+        self.runButton.setEnabled(True)
     
     def run_calculations(self):
         '''
         Running calculation in separate thread
         '''
+        #Disable runButton
+        self.runButton.setEnabled(False)
         #Setting up thread and worker
         self.workThread = QtCore.QThread()
         self.worker = Calculator(self.fileMenu.getSelectedPaths())
         self.worker.moveToThread(self.workThread)
         #connect signal for thread finish
         self.worker.finished.connect(self.workThread.quit)
+        self.worker.finished.connect(self.enable_runButton)
         #connect signal for table update
         self.worker.signal_update_table.connect(self.update_table)
         #connect signal for status update 
