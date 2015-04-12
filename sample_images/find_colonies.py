@@ -8,7 +8,7 @@ Created on Sat Apr 11 20:21:49 2015
 import numpy as np
 import matplotlib.pyplot as plt
 
-from scipy.misc import imread
+from scipy.misc import imread, imsave
 
 from scipy.ndimage.morphology import binary_dilation, generate_binary_structure
 from scipy.ndimage import distance_transform_edt
@@ -19,7 +19,7 @@ from skimage.feature import peak_local_max
 from skimage.filter import threshold_otsu
 
 import sys
-sys.path.append('/home/yalie/Documents/Genehack/hakoton_images/tutorial/scikit')
+sys.path.append('~/Documents/bioinf/hakaton/hakaton_images/sample_images/image_funcs')
 from image_funcs import colorize
 
 
@@ -100,6 +100,8 @@ if __name__ == "__main__":
     # read image from file
     plate = imread('3_cropped.png')
     
+    grayscale = np.max(plate, 2)
+    
     # create initial binary mask
     bin_plate = binarize_image(plate)
     
@@ -108,12 +110,27 @@ if __name__ == "__main__":
     
     # divide groups of colonies into separate ones
     colonies_mask = image_segmentation(bin_col_plate)
-
+    
     # filter false objects from mask
     colonies_masked_clean = mask_cleaning(colonies_mask)
-    plt.imshow(colorize(colonies_masked_clean))
-    
+    #plt.imshow(colorize(colonies_masked_clean))
+    #imsave('test_1.png', colorize(colonies_masked_clean))
+    number_of_colonies = np.unique(colonies_masked_clean).shape[0] - 2
+    number_of_slots = colonies_masked_clean.max()
+    dens = [0.0] * (number_of_slots)
+    num = [0] * (number_of_slots)
+    for i in range(0, colonies_masked_clean.shape[0]):
+        for j in range(0, colonies_masked_clean.shape[1]):
+            if colonies_masked_clean[i][j] != 0:
+                dens[colonies_masked_clean[i][j]-1] += grayscale[i][j]
+                num[colonies_masked_clean[i][j]-1] += 1
+    print("There are " + str(number_of_colonies) + " colonies with densities:")
+    for i in range(0, number_of_slots):
+        if num[i] != 0:
+            dens[i] /= num[i]
+            print(dens[i])
     # divide colonies into different objects
     # may be not necessary operation
     # colony_array = divide_colonies(colonies_masked_clean)
+
 
