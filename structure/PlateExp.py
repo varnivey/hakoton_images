@@ -15,7 +15,7 @@ class PlateExp():
             masks = []
             masks += self.cutPetri(i)
             for j in range(len(masks)):
-                plImage = PlateImage(images[i])
+                plImage = PlateImage(images[i]*masks[j])
                 self.listPlateImages.append(plImage)
         
     def calculate(self):
@@ -71,7 +71,7 @@ class PlateExp():
     
         maxval = np.max(self.allexpdata)
         minval = np.min(self.allexpdata)
-        for plate in listPlateImages:
+        for plate in self.listPlateImages:
         
             plate.circleAllColonies(minval, maxval)
     

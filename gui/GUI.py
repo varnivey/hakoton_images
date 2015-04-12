@@ -109,9 +109,13 @@ class MainWindow(QtGui.QMainWindow):
         print "result Hovered",coord, path 
         
     def open_image_file(self,path):
-        self.preview.setImage(path)
+        #self.preview.setImage(path)
         self.result.setImage(path)
-
+        
+    def open_image_down(self,path):
+        self.preview.setImage(path)
+        #self.result.setImage(path)
+        
     def enable_runButton(self):
         self.runButton.setEnabled(True)
     
@@ -181,8 +185,8 @@ class Calculator(QtCore.QObject,PlateExp):
         for curPlate in self.listPlateImages:
         
             rez = curPlate.calc(self.allexpdata)
-            dictionary.update({ os.path.basename(usedpaths[status]) + (" (%i)" % ((status+1) % 2)) :\
-                                                                                 {'Value' : str(rez) } })
+            #dictionary.update({ os.path.basename(usedpaths[status % 2]) + (" (%i)" % ((status+1) % 2)) : {'Value' : str(rez) } })
+            dictionary.update({ os.path.basename(usedpaths[status // 2]) + (" (%i)" % ((status+1) % 2)) : {'Value' : str(rez) } })
             
             status+=1
             self.signal_update_pbar.emit(status*100/len(self.paths))
@@ -190,6 +194,10 @@ class Calculator(QtCore.QObject,PlateExp):
         print "Done. Generating previews..."
         
         self.genPreviews()
+        
+        imsave('preview.jpg',listPlateImages.preview)
+        open_image_file(self,usedpaths[0])
+        open_image_down(self,'preview.jpg')
         
         print "Done."
         #dictionary={'result':{'Value':str(status)}}

@@ -104,6 +104,7 @@ class PlateImage():
         assert self.colonies != None, "ERROR!"
         
         self.pr_count = 0.
+        print "proc %d colonies" % len(self.colonies)
         for i in self.colonies:
             #omega += i.getScore()
             omega += i.gatherData(data);
@@ -111,7 +112,10 @@ class PlateImage():
         
         assert (self.count == int(self.pr_count)), "ERROR!"
 
-        self.isCalc = omega / self.pr_count
+        if self.pr_count != 0:
+            self.isCalc = omega / self.pr_count
+        else:
+            self.isCalc = 0
         return self.isCalc
 
     def algo1_divide_colonies(self, labelled_image, geometry=[]):
@@ -130,13 +134,13 @@ class PlateImage():
                ctr += 1
                continue
                
-           colony_part = np.zeros(labelled_image.shape)
-           colony_part[labelled_image != colony] = 0
+           #colony_part = np.zeros(labelled_image.shape)
+           #colony_part[labelled_image != colony] = 0
 
            if (len(geometry)>0): # it was provided
-               colony = Colony(colony_part, self.image, gsimage, rescoeff, geometry[ctr])
+               colony = Colony(None, self.image, gsimage, rescoeff, geometry[ctr])
            else:
-               colony = Colony(colony_part, self.image, gsimage, rescoeff)
+               colony = Colony(None, self.image, gsimage, rescoeff)
                
            self.colonies.append(colony)
            ctr+=1

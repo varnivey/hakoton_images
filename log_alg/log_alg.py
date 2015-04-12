@@ -105,15 +105,14 @@ def circle_colony(colony_geometry, colony_score, image_shape, score_min=0.0, sco
     hue_start, hue_stop = [0.0, 1/3.0]  # from 0 to 120 degrees hue colors
     #score_min, score_max = [1.0, 3.0]  # colony scores from 1 till 3
     color_coeff = ((hue_stop - hue_start)/(score_max - score_min))*(colony_score - score_min)
-    print(color_coeff)
     
     # create three layers of hsv image (black background) and binary mask
     x_max = image_shape[0]
     y_max = image_shape[1]
-    mask_saturation = np.array([[0.0 for i in range(x_max)] for i in range(y_max)])
-    mask_light = np.array([[0.0 for i in range(x_max)] for i in range(y_max)])
-    mask_hue = np.array([[0.0 for i in range(x_max)] for i in range(y_max)])
-    mask_binary = np.array([[False for i in range(x_max)] for i in range(y_max)])
+    mask_saturation = np.array([[0.0 for i in range(y_max)] for i in range(x_max)])
+    mask_light = np.array([[0.0 for i in range(y_max)] for i in range(x_max)])
+    mask_hue = np.array([[0.0 for i in range(y_max)] for i in range(x_max)])
+    mask_binary = np.array([[False for i in range(y_max)] for i in range(x_max)])
     
     # find circle
     x, y, r = colony_geometry
