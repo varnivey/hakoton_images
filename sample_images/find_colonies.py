@@ -6,7 +6,6 @@ Created on Sat Apr 11 20:21:49 2015
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 from scipy.misc import imread, imsave
 
@@ -96,6 +95,8 @@ def divige_colonies(labelled_image):
     
 
 if __name__ == "__main__":
+    
+    import matplotlib.pyplot as plt
     
     # read image from file
     plate = imread('3_cropped.png')

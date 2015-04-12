@@ -3,12 +3,14 @@ import numpy as np
 
 from scipy.misc import imread, imsave
 from scipy.misc import imresize
+from scipy.ndimage.morphology import binary_dilation, binary_erosion, generate_binary_structure
 
 from skimage import img_as_ubyte
+from skimage.color import hsv2rgb
 from skimage.draw import circle_perimeter
 from skimage.filters import threshold_otsu as global_otsu
-from scipy.ndimage.morphology import binary_dilation, binary_erosion
 from skimage.feature import blob_log
+
 
 def image_hsv_value(image_file):
     '''Converts image to grayscale'''
@@ -98,3 +100,46 @@ def circle_markers(blobs, pic_shape):
     return markers_rad
 
 
+def circle_colony(colony_geometry, colony_score, image_shape):
+    # color of circle
+    hue_start, hue_stop = [0.0, 1/3.0]  # from 0 to 120 degrees hue colors
+    score_min, score_max = [1.0, 3.0]  # colony scores from 1 till 3
+    color_coeff = ((hue_stop - hue_start)/(score_max - score_min))*(colony_score - score_min)
+    print(color_coeff)
+    
+    # create three layers of hsv image (black background) and binary mask
+    x_max = image_shape[0]
+    y_max = image_shape[1]
+    mask_saturation = np.array([[0.0 for i in range(x_max)] for i in range(y_max)])
+    mask_light = np.array([[0.0 for i in range(x_max)] for i in range(y_max)])
+    mask_hue = np.array([[0.0 for i in range(x_max)] for i in range(y_max)])
+    mask_binary = np.array([[False for i in range(x_max)] for i in range(y_max)])
+    
+    # find circle
+    x, y, r = colony_geometry
+    r = r*2
+    rr, cc = circle_perimeter(x, y, np.round(r).astype(int))
+    rr_new, cc_new = [], []
+    
+    for x_c,y_c in zip(rr,cc):
+        if (x_c >= 0) and (x_c < x_max) and (y_c >= 0) and (y_c < y_max):
+            rr_new.append(x_c)
+            cc_new.append(y_c)
+    
+    # create binary mask with circle
+    mask_binary[rr_new, cc_new] = True
+    
+    struct = generate_binary_structure(2, 1)
+    for i in range(8):
+        mask_binary = binary_dilation(mask_binary, struct)
+    
+    # paint circle in hsv layers
+    mask_saturation[mask_binary] = 1.0
+    mask_light[mask_binary] = 0.75
+    mask_hue[mask_binary] = color_coeff
+    
+    hsv_image = np.dstack([mask_hue, mask_saturation, mask_light])
+    
+    rgb_image = img_as_ubyte(hsv2rgb(hsv_image))
+    
+    return rgb_image, mask_binary
