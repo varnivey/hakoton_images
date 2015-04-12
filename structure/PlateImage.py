@@ -20,6 +20,7 @@ class PlateImage():
         self.image = image
         self.colonies = None
         self.isCalc = None
+        self.image_mask = None
         self.count = None
         self.pr_count = None
         self.algo = algo
@@ -96,6 +97,8 @@ class PlateImage():
 
     def algo1_divide_colonies(self, labelled_image):
        self.colonies = []
+
+       self.image_mask = labelled_image
 
        for colony in np.unique(labelled_image):
            colony_part = np.zeros(labelled_image.shape)
