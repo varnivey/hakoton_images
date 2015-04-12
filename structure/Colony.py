@@ -12,5 +12,40 @@ class Colony():
         
     def calcScore(self):
         return 2. #TODO
+
+    def integrate(x, y, r):
+	import numpy
+        w, h = self.image.shape
+        s = 0.0
+        n = 0
+        r2 = r**2
+        for i in range(-r, r+1):
+            for j in range(-r, r+1):
+                currX = x + i
+                currY = y + j
+                if currX >= w or currX < 0 or currY >= h or currY < 0 or (i**2 + j**2) > r2:
+                    continue
+                else:
+                    s += self.image[currX][currY]
+                    n += 1
+        if n != 0:
+        s /= n
+        return s
+
+    def maxDensity(r):
+	import numpy
+        retval = 255.0
+        w, h = self.image.shape
+        for i in range(-self.geometry[2], self.geometry[2]+1):
+            for j in range(-self.geometry[2], self.geometry[2]+1):
+                currX = self.geometry[0] + i
+                currY = self.geometry[1] + j
+                if currX >= w or currX < 0 or currY >= h or currY < 0:
+                    continue
+                else:
+                    tmp = integrate(self.image, currX, currY, r)
+                if(tmp < retval):
+                    retval = tmp
+        return retval
         
         
