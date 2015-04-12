@@ -63,12 +63,13 @@ class PlateImage():
             i += 1
         
         blobmask = watershed(blobmask, circent_markers, mask=blobmask) # TODO could divide better?
-
+                
+        
         # === DEBUG ===
         #plt.ion() 
         #plt.imshow(colorize(blobmask))
         # =============
-        self.algo1_divide_colonies(blobmask)
+        self.algo1_divide_colonies(blobmask, coords)
     
     def calc(self):
         if self.isCalc != None:
@@ -89,22 +90,33 @@ class PlateImage():
         for i in self.colonies:
             omega += i.getScore()
             self.pr_count += 1.
-    
-        assert self.count != self.pr_count, "ERROR!"
+        
+        assert (self.count == int(self.pr_count)), "ERROR!"
 
         self.isCalc = omega / self.pr_count
         return self.isCalc
 
-    def algo1_divide_colonies(self, labelled_image):
+    def algo1_divide_colonies(self, labelled_image, geometry=[]):
        self.colonies = []
 
        self.image_mask = labelled_image
 
+       ctr = -1 # colony geometry index, starting from zero
        for colony in np.unique(labelled_image):
+       
+           if ctr == -1: # no background needed here!
+               ctr += 1
+               continue
+               
            colony_part = np.zeros(labelled_image.shape)
            #colony_part = plate_image  # mask colonies on input image
            colony_part[labelled_image != colony] = 0
 
-           colony = Colony(colony_part, self.image)
+           if (len(geometry)>0): # it was provided
+               colony = Colony(colony_part, self.image, geometry[ctr])
+           else:
+               colony = Colony(colony_part, self.image)
+               
            self.colonies.append(colony)
+           ctr+=1
        
