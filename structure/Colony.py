@@ -1,7 +1,8 @@
 class Colony():
-    def __init__(self, mask, image):
+    def __init__(self, mask, image, geometry=None):
         self.mask = mask
         self.image = image
+        self.geometry = geometry
         self.score = None
         
     def getScore(self):
