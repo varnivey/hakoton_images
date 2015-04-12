@@ -14,6 +14,12 @@ class Colony():
             self.score = self.calcScore()
         return self.score
         
+    def getGeom(self):
+        if self.geometry == None:
+            return [-1, -1, 0]
+        return self.geometry
+
+
     def calcScore(self):
         return self.maxDensity(5) # TODO not 5
 

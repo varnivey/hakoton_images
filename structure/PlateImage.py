@@ -25,6 +25,7 @@ class PlateImage():
         self.count = None
         self.pr_count = None
         self.algo = algo
+        self.preview = None
 
     def algo1_segm(self):
         # read image from file
@@ -115,7 +116,6 @@ class PlateImage():
                continue
                
            colony_part = np.zeros(labelled_image.shape)
-           #colony_part = plate_image  # mask colonies on input image
            colony_part[labelled_image != colony] = 0
 
            if (len(geometry)>0): # it was provided
@@ -125,4 +125,18 @@ class PlateImage():
                
            self.colonies.append(colony)
            ctr+=1
-       
+    
+    def circle_all_colonies(self):
+      self.preview = self.image
+      im_shape = self.preview.shape
+      
+      for colony in self.colonies:
+          colony_score = colony.getScore()
+          colony_geom = colony.getGeom()
+          circle_image, circle_mask = circle_colony(colony_geom, colony_score, im_shape)
+          
+          # add circle to initial image of plate        
+          self.preview[circle_mask] = 0
+          self.preview += circle_image
+          
+      return self.preview      
