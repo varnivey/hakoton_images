@@ -45,13 +45,15 @@ class Colony():
     def maxDensity(self, r):
 
         retval = 255.0
-        w = self.gsimage.shape[0]
-        h = self.gsimage.shape[1]
-        
-        for i in range(-self.geometry[2], self.geometry[2]+1):
-            for j in range(-self.geometry[2], self.geometry[2]+1):
-                currX = self.geometry[0] + i
-                currY = self.geometry[1] + j
+        w = int(self.gsrescoeff * self.gsimage.shape[0])
+        h = int(self.gsrescoeff * self.gsimage.shape[1])
+	R = int(self.gsrescoeff * self.geometry[2])
+        x = int(self.gsrescoeff * self.geometry[0])
+        y = int(self.gsrescoeff * self.geometry[1])
+        for i in range(-R, R+1):
+            for j in range(-R, R+1):
+                currX = x + i
+                currY = y + j
                 if currX >= w or currX < 0 or currY >= h or currY < 0:
                     continue
                 else:
