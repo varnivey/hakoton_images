@@ -187,6 +187,10 @@ class Calculator(QtCore.QObject,PlateExp):
             status+=1
             self.signal_update_pbar.emit(status*100/len(self.paths))
         
+        print "Done. Generating previews..."
+        
+        self.genPreviews()
+        
         print "Done."
         #dictionary={'result':{'Value':str(status)}}
         self.signal_update_table.emit(dictionary)

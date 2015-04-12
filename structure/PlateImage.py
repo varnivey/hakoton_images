@@ -141,14 +141,14 @@ class PlateImage():
            self.colonies.append(colony)
            ctr+=1
     
-    def circle_all_colonies(self):
+    def circleAllColonies(self, score_min=0.0, score_max=255.0):
       self.preview = self.image
       im_shape = self.preview.shape
       
       for colony in self.colonies:
           colony_score = colony.getScore()
           colony_geom = colony.getGeom()
-          circle_image, circle_mask = log_alg.circle_colony(colony_geom, colony_score, im_shape)
+          circle_image, circle_mask = log_alg.circle_colony(colony_geom, colony_score, im_shape, score_min, score_max)
           
           # add circle to initial image of plate        
           self.preview[circle_mask] = 0
