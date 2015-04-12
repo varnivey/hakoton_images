@@ -101,7 +101,7 @@ class PlateImage():
     def algo1_divide_colonies(self, labelled_image, geometry=[]):
        self.colonies = []
        
-       rescoeff = 1
+       rescoeff = 0.1
        gsimage = np.max(self.image,2)
        gsimage = scipy.misc.imresize(gsimage, rescoeff)
 
