@@ -235,6 +235,9 @@ class Calculator(QtCore.QObject,PlateExp):
         
         print "Done."
         
+        print "DEBUG Colony intensity array:"
+        print self.allexpdata
+        
         #dictionary={'result':{'Value':str(status)}}
         self.signal_update_table.emit(dictionary)
         self.finished.emit()

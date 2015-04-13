@@ -69,24 +69,34 @@ class PlateImage():
         prepimg = 255 - green
         self.count, pic_with_circles, coords = log_alg.label_colonies(prepimg) # TODO tweak parameters
         
-        blobmask = log_alg.circle_markers(coords, prepimg.shape)
-        blobmask = fill_holes(blobmask)
+        #--------------------------------------------------
+        # If we want to, we can process this image to include blobmask too. 
+        #
+        # Since this is not needed for algo 2 colony intensity calculations, 
+        # blobmask is NOT calculated so NOT passed further. 
+        # Changes to algo2_divide_colonies() needed to include blobmask (if such necessity arises).
         
-        circent_markers = np.zeros(prepimg.shape, dtype = np.integer)
+        if (False):
+            blobmask = log_alg.circle_markers(coords, prepimg.shape)
+            blobmask = fill_holes(blobmask)
         
-        i = 1
-        for point in coords:
-            circent_markers[point[0]][point[1]] = i
-            i += 1
+            circent_markers = np.zeros(prepimg.shape, dtype = np.integer)
         
-        blobmask = watershed(blobmask, circent_markers, mask=blobmask) # TODO could divide better?
+            i = 1
+            for point in coords:
+                circent_markers[point[0]][point[1]] = i
+                i += 1
+        
+            blobmask = watershed(blobmask, circent_markers, mask=blobmask) # TODO could divide better?
                 
         
-        # === DEBUG ===
-        #plt.ion() 
-        #plt.imshow(colorize(blobmask))
-        # =============
-        self.algo1_divide_colonies(blobmask, coords)
+            # === DEBUG ===
+            #plt.ion()
+            #plt.imshow(colorize(blobmask))
+            # =============
+        #---------------------------------------------------
+        
+        self.algo2_divide_colonies(coords)
     
     def calc(self, data):
         if self.isCalc != None:
@@ -118,7 +128,7 @@ class PlateImage():
             self.isCalc = 0
         return self.isCalc
 
-    def algo1_divide_colonies(self, labelled_image, geometry=[]):
+    def algo1_divide_colonies(self, labelled_image):
        self.colonies = []
        
        rescoeff = 0.1
@@ -134,16 +144,24 @@ class PlateImage():
                ctr += 1
                continue
                
-           #colony_part = np.zeros(labelled_image.shape)
-           #colony_part[labelled_image != colony] = 0
+           colony_part = np.zeros(labelled_image.shape)
+           colony_part[labelled_image != colony] = 0
 
-           if (len(geometry)>0): # it was provided
-               colony = Colony(None, self.image, gsimage, rescoeff, geometry[ctr])
-           else:
-               colony = Colony(None, self.image, gsimage, rescoeff)
-               
-           self.colonies.append(colony)
+           newcol = Colony(colony_part, self.image, gsimage, rescoeff, 1)
+           self.colonies.append(newcol)
            ctr+=1
+           
+    def algo2_divide_colonies(self, geometries):
+       self.colonies = []
+       
+       rescoeff = 0.1
+       gsimage = np.max(self.image,2)
+       gsimage = scipy.misc.imresize(gsimage, rescoeff)
+
+       for geom in geometries:
+           newcol = Colony(None, self.image, gsimage, rescoeff, 2, geom)
+           self.colonies.append(newcol)
+           
     
     def circleAllColonies(self, score_min=0.0, score_max=255.0):
       self.preview = self.image

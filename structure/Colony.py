@@ -1,11 +1,12 @@
 import numpy
 
 class Colony():
-    def __init__(self, mask, image, gsimage, gsrescoeff, geometry=None):
+    def __init__(self, mask, image, gsimage, gsrescoeff, algo, geometry=None ):
         self.mask = mask
         self.image = image
         self.gsimage = gsimage
         self.gsrescoeff = gsrescoeff
+        self.algo = algo
         self.geometry = geometry
         self.score = None
         
@@ -19,9 +20,11 @@ class Colony():
             return [-1, -1, 0]
         return self.geometry
 
-
     def calcScore(self):
-        return self.maxDensity(5) # TODO not 5
+        if (self.algo == 2):
+            return self.maxDensity(5) # TODO not 5
+        elif (self.algo == 1):
+            return 2.0 # TODO calculate
 
     def gatherData(self, data):
         data.append(self.getScore())
@@ -53,7 +56,7 @@ class Colony():
         retval = 255.0
         w = self.gsimage.shape[0]
         h = self.gsimage.shape[1]
-	R = int(self.gsrescoeff * self.geometry[2])
+        R = int(self.gsrescoeff * self.geometry[2])
         x = int(self.gsrescoeff * self.geometry[0])
         y = int(self.gsrescoeff * self.geometry[1])
         for i in range(-R, R+1):
