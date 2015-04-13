@@ -5,6 +5,7 @@ class PlateExp():
     def __init__(self):
             self.images = []
             self.listPlateImages = []
+            self.usedpaths = []
             self.stat = {}
             self.allexpdata=[]
     

@@ -35,6 +35,7 @@ class MainWindow(QtGui.QMainWindow):
         super(MainWindow, self).__init__()
         self.initUI()
         self.show()
+        self.showingreznum = 1
     
     def initUI(self):
         '''
@@ -103,17 +104,29 @@ class MainWindow(QtGui.QMainWindow):
         print "preview Hovered",coord, path
          
     def resultClicked(self, coord, path):
-        print "result Clicked",coord, path
+        print "result Clicked, changing preview",coord, path
+        
+        # temporary (or not) solution for showing different plates per path:
+        if self.showingreznum == 1:
+            self.showingreznum = 2
+        else:
+            self.showingreznum = 1
+            
+        self.open_image_file(self.preview.currentPath)
          
     def resultHovered(self, coord, path):
         print "result Hovered",coord, path 
         
     def open_image_file(self,path):
-        #self.preview.setImage(path)
-        self.result.setImage(path)
-        
-    def open_image_down(self,path):
         self.preview.setImage(path)
+        rezpath = os.path.splitext(path)[0] + '_calcrezpreview_' + str(self.showingreznum) + os.path.splitext(path)[1]
+        
+        if (os.path.exists(rezpath) and os.path.isfile(rezpath)):
+            self.result.setImage(rezpath)
+        
+    def open_image_calcrez(self,path):
+        pass
+        #self.preview.setImage(path)
         #self.result.setImage(path)
         
     def enable_runButton(self):
@@ -161,7 +174,9 @@ class Calculator(QtCore.QObject,PlateExp):
         print 'started'
         #Add
         imgholder=[]
-        usedpaths=[]
+        self.usedpaths=[]
+        print "Loading %d images..." % len(self.paths)
+        
         for path in self.paths:
             try:
                 img = imread(path)
@@ -170,36 +185,56 @@ class Calculator(QtCore.QObject,PlateExp):
                 continue
                 
             imgholder.append(img)
-            usedpaths.append(path)
+            self.usedpaths.append(path)
             print "Loaded image. ( %s )" % path
         
         self.addImages(imgholder)
+        
+        for upath in self.usedpaths:
+            for i in range(1,3):
+                rezpath = os.path.splitext(upath)[0] + '_calcrezpreview_'+ str(i) + os.path.splitext(upath)[1]
+                if (os.path.exists(rezpath) and os.path.isfile(rezpath)):
+                    print "Removing old result before calculation: " + rezpath
+                    os.remove(rezpath)
+
         #print usedpaths
         print "------------------------------"
         print "Processing %d plates..." % len(self.listPlateImages)
         
         #Calculate
         status=0
-        self.signal_update_pbar.emit(status*100/len(self.paths))
+        self.signal_update_pbar.emit(status*100/len(self.listPlateImages))
         dictionary = {}
-        for curPlate in self.listPlateImages:
+        for curPlate in self.listPlateImages: # requires EXACLY 2 plates per image
         
             rez = curPlate.calc(self.allexpdata)
             #dictionary.update({ os.path.basename(usedpaths[status % 2]) + (" (%i)" % ((status+1) % 2)) : {'Value' : str(rez) } })
-            dictionary.update({ os.path.basename(usedpaths[status // 2]) + (" (%i)" % ((status+1) % 2)) : {'Value' : str(rez) } })
+            dictionary.update({ os.path.basename(self.usedpaths[status // 2]) + (" (%i)" % ((status % 2) + 1)) : {'Value' : str(rez) } })
             
             status+=1
-            self.signal_update_pbar.emit(status*100/len(self.paths))
-        
-        print "Done. Generating previews..."
-        
-        self.genPreviews()
-        
-        imsave('preview.jpg',listPlateImages.preview)
-        open_image_file(self,usedpaths[0])
-        open_image_down(self,'preview.jpg')
+            self.signal_update_pbar.emit(status*100/len(self.listPlateImages))
         
         print "Done."
+        print "Generating previews..."
+        
+        #-------------------------
+        # TODO FIXME fix this, for now showing plate images instead of previews (for testing purposes)
+        
+        #self.genPreviews() 
+        
+        for plate in self.listPlateImages:
+            plate.preview = plate.image
+        #-------------------------
+        
+        ctr = 0
+        for plate in self.listPlateImages:
+            rezpath = os.path.splitext(self.usedpaths[ctr // 2])[0] + '_calcrezpreview_' + str((ctr % 2) + 1) + os.path.splitext(self.usedpaths[ctr // 2])[1]
+            if plate.preview != None:
+                imsave(rezpath, plate.preview)
+            ctr += 1
+        
+        print "Done."
+        
         #dictionary={'result':{'Value':str(status)}}
         self.signal_update_table.emit(dictionary)
         self.finished.emit()
@@ -207,6 +242,7 @@ class Calculator(QtCore.QObject,PlateExp):
 def main():
     
     app = QtGui.QApplication(sys.argv)
+    app.setWindowIcon(QtGui.QIcon('icon.png'))
     ex = MainWindow()
     ex.show()
     sys.exit(app.exec_())

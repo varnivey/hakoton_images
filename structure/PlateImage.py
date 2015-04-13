@@ -102,9 +102,9 @@ class PlateImage():
             self.algo2_segm()
             
         assert self.colonies != None, "ERROR!"
+        print "Recognised %d colonies" % len(self.colonies)
         
         self.pr_count = 0.
-        print "proc %d colonies" % len(self.colonies)
         for i in self.colonies:
             #omega += i.getScore()
             omega += i.gatherData(data);
